@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dinner Options to Choose From — Macho, Verne, and Michael</title>
+<style>
+  :root{
+    --bg:#faf7f2; --card:#ffffff; --ink:#2b2b28; --sub:#6b6a63;
+    --accent:#3f5c45; --accent-light:#e8efe6; --border:#e7e2d8;
+    --gf:#3f5c45; --veg:#8a6d3b; --warn:#a4402a;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.5;
+  }
+  .wrap{max-width:1240px; margin:0 auto; padding:32px 20px 80px;}
+  header.hero{ text-align:center; margin-bottom:28px; }
+  header.hero h1{ font-size:2.1rem; margin:0 0 6px; letter-spacing:-0.02em; }
+  header.hero p{ color:var(--sub); max-width:640px; margin:0 auto; font-size:1rem;}
+  .rules{
+    background:var(--card); border:1px solid var(--border); border-radius:14px;
+    padding:18px 22px; margin:24px 0; display:flex; flex-wrap:wrap; gap:14px 28px; justify-content:center;
+  }
+  .rules div{ text-align:center; min-width:110px; }
+  .rules .num{ font-size:1.5rem; font-weight:700; color:var(--accent); display:block; }
+  .rules .label{ font-size:0.8rem; color:var(--sub); text-transform:uppercase; letter-spacing:.04em; }
+  .gf-banner{
+    background:var(--accent-light); border:1px solid #cfe0cf; border-radius:14px;
+    padding:16px 20px; margin:0 0 28px; font-size:0.95rem; color:#284830;
+  }
+  .gf-banner strong{color:var(--accent);}
+  h2.section-title{
+    font-size:1.4rem; margin:44px 0 4px; padding-bottom:8px; border-bottom:2px solid var(--border);
+    display:flex; align-items:center; gap:10px;
+  }
+  h2.section-title .pick{
+    font-size:0.85rem; font-weight:600; color:#fff; background:var(--accent);
+    padding:5px 10px 4px; border-radius:20px; line-height:1; display:inline-flex; align-items:center;
+  }
+  p.section-sub{ color:var(--sub); margin:6px 0 18px; font-size:0.92rem; }
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(320px,1fr)); gap:22px; }
+  .card{
+    background:var(--card); border:1px solid var(--border); border-radius:16px; overflow:hidden;
+    display:flex; flex-direction:column;
+  }
+  .card img.thumb{
+    width:100%; height:260px; object-fit:cover; display:block; background:#eee; cursor:zoom-in;
+  }
+  .card .body{ padding:14px 16px 16px; display:flex; flex-direction:column; gap:6px; flex:1; }
+  .card h3{ margin:0; font-size:1.02rem; line-height:1.25; }
+  .desc{ font-size:0.88rem; color:#4a4a45; flex:1; }
+  .tags{ display:flex; flex-wrap:wrap; gap:5px; margin-top:4px; }
+  .tag{ font-size:0.7rem; padding:3px 8px; border-radius:20px; font-weight:600; }
+  .tag.gf{ background:var(--accent-light); color:var(--gf); }
+  .tag.veg{ background:#f4ecd8; color:var(--veg); }
+  .tag.warn{ background:#f7e3dc; color:var(--warn); }
+  .tag.rating{ background:#fdf0d5; color:#8a5a10; }
+  .sauce-card{
+    background:var(--card); border:1px solid var(--border); border-radius:14px; padding:14px 16px;
+  }
+  .sauce-card h3{ margin:0 0 4px; font-size:1rem; }
+  .sauce-card .desc{ font-size:0.85rem; color:#4a4a45; }
+  .note{
+    font-size:0.8rem; color:var(--sub); margin-top:30px; border-top:1px solid var(--border); padding-top:16px;
+  }
+
+  .lightbox{
+    display:none; position:fixed; inset:0; background:rgba(20,18,14,0.88);
+    z-index:1000; align-items:center; justify-content:center; padding:20px;
+  }
+  .lightbox.open{ display:flex; }
+  .lightbox-box{
+    background:var(--card); border-radius:18px; overflow:hidden;
+    width:100%; max-width:900px; max-height:92vh;
+    display:flex; flex-direction:column;
+    box-shadow:0 20px 60px rgba(0,0,0,0.5);
+  }
+  .lightbox-imgwrap{ background:#111; flex:0 0 auto; }
+  .lightbox-imgwrap img{
+    width:100%; height:58vh; object-fit:cover; display:block; background:#111;
+  }
+  .lightbox-info{ padding:18px 26px 26px; overflow-y:auto; }
+  .lightbox-label{
+    font-size:0.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em;
+    color:var(--accent); margin-bottom:6px;
+  }
+  .lightbox-info h3{ margin:0 0 8px; font-size:1.3rem; }
+  .lightbox-info .desc{ font-size:1rem; color:#3a3a35; margin-bottom:10px; }
+  .lightbox-info .tags{ margin-top:2px; }
+  .lightbox-info .tag{ font-size:0.78rem; padding:4px 11px; }
+  .lightbox-close,
+  .lightbox-nav{
+    position:absolute; width:46px; height:46px; border-radius:50%; border:none;
+    background:rgba(255,255,255,0.92); font-size:1.4rem; line-height:1; color:var(--ink);
+    cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:2;
+  }
+  .lightbox-close:hover,
+  .lightbox-nav:hover{ background:#fff; }
+  .lightbox-close{ top:26px; right:30px; }
+  .lightbox-nav{ top:50%; transform:translateY(-50%); }
+  .lightbox-nav.prev{ left:16px; }
+  .lightbox-nav.next{ right:16px; }
+  @media (max-width:640px){
+    .lightbox-close, .lightbox-nav{ width:40px; height:40px; font-size:1.2rem; }
+    .lightbox-nav.prev{ left:6px; }
+    .lightbox-nav.next{ right:6px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <h1>Dinner Options for Wednesday, August 12</h1>
+    <p>Everything to choose from for dinner for Macho, Verne, and Michael — descriptions and ingredients for each option so we can pick together.</p>
+  </header>
+
+  <div class="gf-banner">
+    <strong>Gluten-free note for Macho:</strong> Goop Kitchen states in its official allergen guide that the whole kitchen is gluten-free — but it's <em>not</em> celiac-safe, since some locations share prep space with other allergens. Every item below is gluten-free unless flagged otherwise. If Macho has celiac disease (not just a gluten sensitivity), it's worth a quick call/text to the store (310-954-1286) before ordering.
+  </div>
+
+  <div class="gf-banner" style="background:#f7e3dc; border-color:#eccabd; color:#5c2c1a;">
+    <strong style="color:var(--warn);">Garlic note for Michael:</strong> Anything below tagged "Contains Garlic" lists garlic as a main ingredient (not just a background seasoning) — worth avoiding or checking on given the garlic sensitivity.
+  </div>
+
+  <div class="gf-banner" style="background:#fdf0d5; border-color:#f0dfb8; color:#5c4210;">
+    <strong style="color:#8a5a10;">Ratings:</strong> The "goop for ALL" package itself has a 100% approval rating on DoorDash (6 ratings). Only two individual dishes here have enough DoorDash orders to show their own public rating — The BEST Arugula Salad and Everyday Kale and Brussels Salad, both tagged below. Everything else (all the sides, sauces, both mains, and the other two salads) doesn't have enough reviews yet to display a rating — that's not a knock on them, just low order volume for that specific size/item.
+  </div>
+
+  <p style="text-align:center; font-weight:600; margin:28px 0 6px; font-size:1.05rem;">We need to choose: <span style="font-weight:400; color:var(--sub);">(serves 3–5)</span></p>
+  <div class="rules">
+    <div><span class="num">1</span><span class="label">Main</span></div>
+    <div><span class="num">4</span><span class="label">Sides</span></div>
+    <div><span class="num">3</span><span class="label">Sauces</span></div>
+    <div><span class="num">1</span><span class="label">Salad</span></div>
+  </div>
+
+  <!-- MAINS -->
+  <h2 class="section-title">Mains <span class="pick">choose 1</span></h2>
+  <div class="grid">
+    <div class="card">
+      <img class="thumb" src="https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/accbaada-bba7-4433-9a25-8867d8e95bbb-retina-large.jpg" alt="Whole Roasted Chicken">
+      <div class="body">
+        <h3>Whole Roasted Chicken</h3>
+        <div class="desc">Whole, slow-cooked organic roasted chicken, seasoned with Goop Kitchen's own secret spice mix, served with wilted spinach and arugula. (Photo shown is the full "goop for ALL" platter — chicken doesn't have its own solo product photo published.)</div>
+        <div class="tags"><span class="tag gf">Gluten-Free</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <img class="thumb" src="https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/5aa73e79-59b1-4a8b-be39-7188354b5739-retina-large.jpg" alt="Whole Roasted Cauliflower">
+      <div class="body">
+        <h3>Whole Roasted Cauliflower</h3>
+        <div class="desc">A hearty, satisfying main (or shareable side) for veggie lovers — a whole char-roasted head of cauliflower.</div>
+        <div class="tags"><span class="tag gf">Gluten-Free</span><span class="tag veg">Vegetarian</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDES -->
+  <h2 class="section-title">Sides <span class="pick">choose 4</span></h2>
+  <p class="section-sub">All 8 options.</p>
+  <div class="grid">
+
+    <div class="card">
+      <img class="thumb" src="https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/b24f9d45-440a-42e2-a6b1-2b7dc4446e3f-retina-large.jpg" alt="Smashed Fingerling Potatoes">
+      <div class="body">
+        <h3>Smashed Fingerling Potatoes</h3>
+        <div class="desc">Cooked not once, not twice, but three times, and seasoned with Goop's roasted spice blend.</div>
+        <div class="tags"><span class="tag gf">Gluten-Free</span><span class="tag veg">Vegetarian</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img class="thumb" src="https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/7228f40b-8ae7-4f5c-bf69-f364f684504f-retina-large.jpg" alt="GP's Soccata">
+      <div class="body">
+        <h3>GP's Soccata</h3>
+        <div class="desc">A blend of chickpeas, kale, and feta, roasted and pan-seared.</div>
+        <div class="tags"><span class="tag gf">Gluten-Free</span><span class="tag veg">Vegetarian</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img class="thumb" src="https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/30af556f-bb5a-4db8-897b-6e469a5acd55-retina-large.jpg" alt="Fancy Mac-n-Cheese">
+      <div class="body">
+        <h3>Fancy Mac-n-Cheese</h3>
+        <div class="desc">Baked mac-n-cheese — golden, gooey, and oh so good. (Made with gluten-free pasta per Goop's kitchen-wide GF standard.)</div>
+        <div class="tags"><span class="tag gf">Gluten-Free</span><span class="tag veg">Vegetarian</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img class="thumb" src="https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/3b29fe29-f5d6-4ec3-adbb-d792aed7c590-retina-large.jpg" alt="Green Beans and Caramelized Shallots">
+      <div class="body">
+        <h3>Green Beans and Caramelized Shallots</h3>
+        <div class="desc">Green beans prepared French style — sautéed lightly with slow-roasted shallots.</div>
+        <div class="tags"><span class="tag gf">Gluten-Free</span><span class="tag gf">Dairy-Free</span><span class="tag veg">Vegan</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img class="thumb" src="https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/85520dc6-85fc-468d-89c7-c5074d568149-retina-large.jpg" alt="Greek Beets &amp; Orzo Salad">
+      <div class="body">
+        <h3>Greek Beets &amp; Orzo Salad</h3>
+        <div class="desc">Tender golden beets, cucumbers, arugula, cherry tomatoes, orzo, feta cheese, toasted almonds, and pickled onion.</div>
+        <div class="tags"><span class="tag gf">Gluten-Free</span><span class="tag veg">Vegetarian</span><span class="tag warn">Contains Nuts</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img class="thumb" src="https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/f08c0862-6fed-41eb-87ab-7c50f5923279-retina-large.jpg" alt="Garlic Roasted Japanese Sweet Potatoes">
+      <div class="body">
+        <h3>Garlic Roasted Japanese Sweet Potatoes</h3>
+        <div class="desc">Oven-roasted Japanese sweet potatoes, seasoned with Goop's version of togarashi (a Japanese spice blend) and garlic.</div>
+        <div class="tags"><span class="tag gf">Gluten-Free</span><span class="tag gf">Dairy-Free</span><span class="tag veg">Vegan</span><span class="tag warn">Contains Garlic</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img class="thumb" src="https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/d0fbf334-fb50-4b95-8142-3b9a56a51e14-retina-large.jpg" alt="Simple Garlic Broccoli">
+      <div class="body">
+        <h3>Simple Garlic Broccoli</h3>
+        <div class="desc">Steamed with garlic confit, served with a lemon wedge.</div>
+        <div class="tags"><span class="tag gf">Gluten-Free</span><span class="tag gf">Dairy-Free</span><span class="tag veg">Vegan</span><span class="tag warn">Contains Garlic</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img class="thumb" src="https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/75fd8add-6ce9-4f85-bd14-28b9a1941cd8-retina-large.jpg" alt="Garlic Mashed Potatoes">
+      <div class="body">
+        <h3>Garlic Mashed Potatoes</h3>
+        <div class="desc">A lighter take on mashed potatoes, made with Yukon gold potatoes, cauliflower, and roasted garlic.</div>
+        <div class="tags"><span class="tag gf">Gluten-Free</span><span class="tag veg">Vegetarian</span><span class="tag warn">Contains Dairy</span><span class="tag warn">Contains Garlic</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SAUCES -->
+  <h2 class="section-title">Sauces <span class="pick">choose 3</span></h2>
+  <p class="section-sub">Goop Kitchen doesn't publish full ingredient lists for these on its public menu — names and allergen flags below come from their current Allergen &amp; Sensitivity Guide. If anyone has a specific allergy beyond gluten, worth confirming directly with the restaurant.</p>
+  <div class="grid">
+    <div class="sauce-card">
+      <h3>BBQ Sauce</h3>
+      <div class="desc">Goop's house barbecue sauce.</div>
+    </div>
+    <div class="sauce-card">
+      <h3>"IYKYK" Hot Sauce</h3>
+      <div class="desc">Full name on the allergen guide is "Arbol-Amarillo Salsa" — a smoky arbol and yellow-chili hot salsa.</div>
+    </div>
+    <div class="sauce-card">
+      <h3>Salsa Verde</h3>
+      <div class="desc">Green salsa, typically tomatillo/herb-based.</div>
+    </div>
+    <div class="sauce-card">
+      <h3>Herby Aioli</h3>
+      <div class="desc">Goop's version of tartar sauce — herb-flecked aioli.</div>
+    </div>
+    <div class="sauce-card">
+      <h3>Nondairy Ranch Dressing</h3>
+      <div class="desc">Dairy-free take on classic ranch.</div>
+      <div class="tags"><span class="tag gf">Dairy-Free</span></div>
+    </div>
+    <div class="sauce-card">
+      <h3>Cashew Vinaigrette</h3>
+      <div class="desc">Creamy vinaigrette made from blended cashews.</div>
+      <div class="tags"><span class="tag warn">Contains Tree Nuts (Cashews)</span></div>
+    </div>
+    <div class="sauce-card">
+      <h3>Garlic Aioli</h3>
+      <div class="desc">Creamy garlic-forward aioli.</div>
+      <div class="tags"><span class="tag warn">Contains Garlic</span></div>
+    </div>
+    <div class="sauce-card">
+      <h3>Shallot-Garlic Chili Crunch Oil</h3>
+      <div class="desc">Crunchy chili oil with shallot and garlic.</div>
+      <div class="tags"><span class="tag warn">Contains Garlic</span></div>
+    </div>
+  </div>
+
+  <!-- SALADS -->
+  <h2 class="section-title">Dinner Salad <span class="pick">choose 1</span></h2>
+  <div class="grid">
+    <div class="card">
+      <img class="thumb" src="https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/0590cc2c-ae86-4c08-8cbe-220999559911-retina-large.jpg" alt="The BEST Arugula Salad">
+      <div class="body">
+        <h3>The BEST Arugula Salad</h3>
+        <div class="desc">"It's just a really good salad" — arugula and butter lettuce hearts, watermelon radish, parmesan, crispy shallots and capers on the side.</div>
+        <div class="tags"><span class="tag gf">Gluten-Free</span><span class="tag veg">Vegetarian</span></div>
+        <div class="tags"><span class="tag rating">★ 100% liked on DoorDash (17 ratings)</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <img class="thumb" src="https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/b3d3bf20-a6f0-4fd1-9e7f-319b2c9891cb-retina-large.jpg" alt="Everyday Kale and Brussels Salad">
+      <div class="body">
+        <h3>Everyday Kale and Brussels Salad</h3>
+        <div class="desc">Finely shaved kale, brussels sprouts, and green cabbage, with Hook's 2-year aged white cheddar.</div>
+        <div class="tags"><span class="tag gf">Gluten-Free</span><span class="tag veg">Vegetarian</span></div>
+        <div class="tags"><span class="tag rating">★ 93% liked on DoorDash (15 ratings)</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <img class="thumb" src="https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/d7fdd1e7-7def-4885-afbd-3412d88f63b7-retina-large.jpg" alt="Little Gem Caesar Salad">
+      <div class="body">
+        <h3>Little Gem Caesar Salad</h3>
+        <div class="desc">Red and green gem lettuce, parmesan, and gluten-free sourdough-style parmesan croutons, with Caesar dressing.</div>
+        <div class="tags"><span class="tag gf">Gluten-Free</span><span class="tag veg">Vegetarian</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <img class="thumb" src="https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/42f461ff-d9ce-43e4-ad97-1437dfa6d277-retina-large.jpg" alt="Your Favorite Summer Salad">
+      <div class="body">
+        <h3>Your Favorite Summer Salad</h3>
+        <div class="desc">Summer seasonal lettuce blend, pesto-marinated chickpeas, roasted cherry tomatoes, Persian cucumbers, basil, parmesan, with a side of parmesan croutons and creamy Italian vinaigrette.</div>
+        <div class="tags"><span class="tag gf">Likely Gluten-Free</span><span class="tag veg">Vegan (remove parmesan &amp; croutons)</span></div>
+        <div class="tags"><span class="tag warn">goopkitchen.com doesn't show a GF badge on this one, unlike every other salad — DoorDash's own item copy says "gluten-free," but worth confirming before ordering</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    Sources: <a href="https://www.goopkitchen.com/menu" target="_blank">goopkitchen.com/menu</a> (descriptions and dietary tags) and Goop Kitchen's DoorDash listing (photos and ratings) and Goop Kitchen's Spring 2026 Allergen &amp; Sensitivity Guide (gluten-free kitchen statement, sauce/side allergen call-outs). Descriptions are Goop Kitchen's own copy. Ratings are DoorDash's "percent liked" score from customer orders, not a 5-star rating. Always double check with the restaurant directly for anyone with a severe or celiac-level allergy.
+  </div>
+
+</div>
+
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
+  <button class="lightbox-nav prev" id="lightboxPrev" aria-label="Previous">&#8249;</button>
+  <button class="lightbox-nav next" id="lightboxNext" aria-label="Next">&#8250;</button>
+  <div class="lightbox-box">
+    <div class="lightbox-imgwrap"><img id="lightboxImg" src="" alt=""></div>
+    <div class="lightbox-info">
+      <div class="lightbox-label" id="lightboxLabel"></div>
+      <h3 id="lightboxTitle"></h3>
+      <div class="desc" id="lightboxDesc"></div>
+      <div id="lightboxTags"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    var lightbox = document.getElementById('lightbox');
+    var lbImg = document.getElementById('lightboxImg');
+    var lbLabel = document.getElementById('lightboxLabel');
+    var lbTitle = document.getElementById('lightboxTitle');
+    var lbDesc = document.getElementById('lightboxDesc');
+    var lbTags = document.getElementById('lightboxTags');
+
+    // Group every photo card by its section (category), in document order.
+    var categories = [];
+    document.querySelectorAll('.grid').forEach(function(grid){
+      var el = grid.previousElementSibling;
+      while(el && el.tagName !== 'H2'){ el = el.previousElementSibling; }
+      var categoryName = el ? el.childNodes[0].textContent.trim() : '';
+      var cards = Array.prototype.filter.call(grid.querySelectorAll('.card'), function(c){
+        return c.querySelector('img.thumb');
+      });
+      if(cards.length){
+        categories.push({ name: categoryName, cards: cards });
+      }
+    });
+
+    var currentCat = 0, currentIdx = 0;
+
+    function show(catIdx, idx){
+      var cat = categories[catIdx];
+      var card = cat.cards[idx];
+      var img = card.querySelector('img.thumb');
+      var title = card.querySelector('h3');
+      var desc = card.querySelector('.desc');
+      var tagGroups = card.querySelectorAll('.tags');
+
+      currentCat = catIdx; currentIdx = idx;
+      lbImg.src = img.src;
+      lbImg.alt = img.alt;
+      lbLabel.textContent = cat.name + ': ' + (idx + 1) + ' of ' + cat.cards.length + ' options';
+      lbTitle.textContent = title ? title.textContent : '';
+      lbDesc.textContent = desc ? desc.textContent : '';
+      lbTags.innerHTML = '';
+      tagGroups.forEach(function(tg){ lbTags.appendChild(tg.cloneNode(true)); });
+    }
+
+    function openLightbox(catIdx, idx){
+      show(catIdx, idx);
+      lightbox.classList.add('open');
+    }
+    function closeLightbox(){
+      lightbox.classList.remove('open');
+    }
+    function prev(){
+      var cat = categories[currentCat];
+      var idx = (currentIdx - 1 + cat.cards.length) % cat.cards.length;
+      show(currentCat, idx);
+    }
+    function next(){
+      var cat = categories[currentCat];
+      var idx = (currentIdx + 1) % cat.cards.length;
+      show(currentCat, idx);
+    }
+
+    categories.forEach(function(cat, catIdx){
+      cat.cards.forEach(function(card, idx){
+        var img = card.querySelector('img.thumb');
+        img.addEventListener('click', function(){
+          openLightbox(catIdx, idx);
+        });
+      });
+    });
+
+    document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+    document.getElementById('lightboxPrev').addEventListener('click', prev);
+    document.getElementById('lightboxNext').addEventListener('click', next);
+    lightbox.addEventListener('click', function(e){
+      if(e.target === lightbox) closeLightbox();
+    });
+    document.addEventListener('keydown', function(e){
+      if(!lightbox.classList.contains('open')) return;
+      if(e.key === 'Escape') closeLightbox();
+      if(e.key === 'ArrowLeft') prev();
+      if(e.key === 'ArrowRight') next();
+    });
+  })();
+</script>
+
+</body>
+</html>
